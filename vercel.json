@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds":  [
+    {
+      "src": "./server/index.js",
+      "use": "babel-node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ]
+}
