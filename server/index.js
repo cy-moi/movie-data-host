@@ -1,7 +1,9 @@
 import 'dotenv/config'
 import mongoose from 'mongoose';
-import { ApolloServer } from 'apollo-server';
-
+import express from 'express';
+import cors from 'cors';
+// import { ApolloServer } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-express'
 import { typeDefs } from './typeDefs';
 import { resolvers } from './resolvers';
 import Movies from './dataSources/movies';
@@ -11,31 +13,31 @@ const main = async () => {
   await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
 };
 
-// const connection = mongoose.connection;
-// // let collection;
+const app = express();
+app.use(cors())
 
-// connection.on('error', console.error.bind(console, 'connection error:'));
-// connection.on('open', function () {
-    console.log("connection open")
+console.log("connection open")
 
-    main()
-        .then(async ()=> {
-            console.log('🎉 connected to database successfully')
-            const collection = await mongoose.connection.collection("watchlist");
-            // collection.find({}).toArray(function(err, result) {
-            //     console.log(result)
-            // })
-            const dataSources = () => ({
-                movies: new Movies(collection),
-            });
-            const server = new ApolloServer({ typeDefs, resolvers, dataSources })
-        
-            server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
-            console.log(`🚀 Server ready at ${url}`);
-            });
+main()
+    .then(async ()=> {
+        console.log('🎉 connected to database successfully')
+        const collection = await mongoose.connection.collection("watchlist");
+        // collection.find({}).toArray(function(err, result) {
+        //     console.log(result)
+        // })
+        const dataSources = () => ({
+            movies: new Movies(collection),
+        });
+        const server = new ApolloServer({ typeDefs, resolvers, dataSources })
+        await server.start()
+        server.applyMiddleware({ path: '/graphql', app})
+        app.listen(8080, ()=> {console.log(`🚀 Server ready `)})
+        // server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+        //     console.log(`🚀 Server ready at ${url}`);
+        // });
 
-        })
-        .catch(error => console.error(error));
+    })
+    .catch(error => console.error(error));
 
 
 

@@ -3,13 +3,13 @@
   "builds":  [
     {
       "src": "./server/index.js",
-      "use": "babel-node"
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/"
+      "src": "/server/(.*)",
+      "dest": "/server/index.js"
     }
   ]
 }
